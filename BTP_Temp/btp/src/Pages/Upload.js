@@ -9,6 +9,8 @@ function Upload(){
 	const [isSelected, setIsSelected] = useState(false);
     const [blobURL, setBlobUrl] = useState();
     const [blob, setBlob]  = useState();
+    const[getanswer, setGetanswer] =useState(false)
+    const[answer,setAnswer]=useState("Voice Disorder Is Present")
 
 	function changeHandler(event){
 		setSelectedFile(event.target.files[0]);
@@ -24,7 +26,19 @@ function Upload(){
     {
         axios
             .post('/api/feature_extraction/',blob)
-            .then((res)=>console.log(res));
+            .then(
+                (res)=>{
+                    if(res.data["Disorder"]===1)
+                    {
+                        setAnswer("Voice Disorder Is Present")                    
+                    }
+                    else
+                    {
+                        setAnswer("Healthy Voice")
+                    }
+                    setGetanswer(true)
+                }
+            );
     }
 
     function show()
@@ -67,6 +81,12 @@ function Upload(){
                 ) : (
                     <p>Select a file to show details</p>
                 )}
+                { 
+                    getanswer===true &&
+                    <div>
+                        <h2>{answer}</h2>
+                    </div>
+                }
             </div>
         </div>
 	)

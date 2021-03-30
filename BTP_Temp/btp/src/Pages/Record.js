@@ -12,6 +12,8 @@ function Record () {
     const [isBlocked, setIsBlocked] = useState(false)
     const [blobURL, setBlobUrl] = useState()
     const [blob, setBlob]  = useState()
+    const[getanswer, setGetanswer] =useState(false)
+    const[answer,setAnswer]=useState("Voice Disorder Is Present")
 
     useEffect ( () => {
         navigator.getUserMedia({ audio: true },
@@ -64,7 +66,19 @@ function Record () {
     {
         axios
             .post('/api/feature_extraction/',blob)
-            .then((res)=>console.log(res));
+            .then(
+                (res)=>{
+                if(res.data["Disorder"]===1)
+                {
+                    setAnswer("Voice Disorder Is Present")                    
+                }
+                else
+                {
+                    setAnswer("Healthy Voice")
+                }
+                setGetanswer(true)
+            }
+            );
     }
 
     return (
@@ -92,6 +106,12 @@ function Record () {
                 <div>
                     <button onClick={test}>Test For Voice Disorder</button>
                 </div>
+                { 
+                    getanswer===true &&
+                    <div>
+                        <h2>{answer}</h2>
+                    </div>
+                }
             </div>
       </div>
     );

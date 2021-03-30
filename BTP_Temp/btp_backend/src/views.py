@@ -7,6 +7,7 @@ from django.http import JsonResponse
 import uuid
 from pydub import AudioSegment
 from src.feature_extraction import extract_features
+import pickle
 # Create your views here.
 
 @api_view(['GET', 'POST'])
@@ -20,7 +21,12 @@ def feature_extraction(request):
     sound.export(location, format="wav") 
     if os.path.exists(original_location):
         os.remove(original_location)
-    features = extract_features(location)
-    print(features)
-    data = {'a':1, 'b':2}
+    features = extract_features(location).reshape(1,-1)
+    if os.path.exists(location):
+        os.remove(location)
+    Voice_Disorder_Model=pickle.load(open("Voice_Disorder_Model.sav", 'rb'))
+    ans = Voice_Disorder_Model.predict(features)
+    print(int(ans[0])) 
+    data = {'Disorder' : int(ans[0])}
     return JsonResponse(data)
+
